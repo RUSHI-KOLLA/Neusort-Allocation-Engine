@@ -46,5 +46,16 @@ export class OrdersService {
     return ORDERS.find((o) => o.id === id);
   }
 
-  // NOTE: You will add more methods here in the implementation tasks.
+  getGarmentStatusSummary(): { [status: string]: number } {
+    const summary: { [status: string]: number } = {};
+    for (const order of ORDERS) {
+      for (const garment of order.garments) {
+        if (!summary[garment.status]) {
+          summary[garment.status] = 0;
+        }
+        summary[garment.status]++;
+      }
+    }
+    return summary;
+  }
 }
