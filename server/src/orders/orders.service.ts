@@ -64,6 +64,7 @@ export class OrdersService {
     return summary;
   }
 
+  /** Test-only helper to swap in-memory data for edge-case coverage. */
   setOrdersForTesting(orders: Order[]): void {
     ORDERS.length = 0;
     ORDERS.push(...orders);

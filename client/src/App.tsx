@@ -30,7 +30,7 @@ export const App: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<'all' | 'received' | 'in_cleaning' | 'ready' | 'delivered'>('all');
-  const [summary, setSummary] = useState<Record<Garment['status'], number> | null>(null);
+  const [summary, setSummary] = useState<{ [status: string]: number } | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -47,7 +47,7 @@ export const App: React.FC = () => {
         if (!summaryRes.ok) throw new Error(`HTTP ${summaryRes.status} on summary`);
         
         const ordersData = (await ordersRes.json()) as Order[];
-        const summaryData = (await summaryRes.json()) as Record<Garment['status'], number>;
+        const summaryData = (await summaryRes.json()) as { [status: string]: number };
         
         setOrders(ordersData);
         setSummary(summaryData);
@@ -89,7 +89,7 @@ export const App: React.FC = () => {
             <div className="summary-grid">
               {Object.entries(summary).map(([status, count]) => (
                 <div key={status} className={`summary-card ${status}`}>
-                  <div className="label">{status.replace('_', ' ')}</div>
+                  <div className="label">{status.replace(/_/g, ' ')}</div>
                   <div className="count">{count}</div>
                 </div>
               ))}

@@ -1,9 +1,9 @@
 import { Controller, Get, Param, NotFoundException } from '@nestjs/common';
-import { OrdersService, Order, GarmentStatus } from './orders.service';
+import { OrdersService, Order } from './orders.service';
 
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) {}
+  constructor(private readonly ordersService: OrdersService) { }
 
   @Get()
   getOrders(): Order[] {

@@ -19,28 +19,28 @@ assert.ok(order!.totalGarments !== undefined, 'findOne should include totalGarme
 const missing = service.findOne('ORD-9999');
 assert.strictEqual(missing, undefined, 'findOne should return undefined for non-existent ID');
 
-// Test getGarmentStatusSummary - only present statuses are returned
+// Test getGarmentStatusSummary - only non-zero statuses are returned
 const summary = service.getGarmentStatusSummary();
 assert.ok('received' in summary, 'summary should include received');
 assert.ok('in_cleaning' in summary, 'summary should include in_cleaning');
 assert.ok('ready' in summary, 'summary should include ready');
 assert.ok(!('delivered' in summary), 'summary should omit delivered (count is 0)');
-assert.strictEqual(summary.received, 1);
-assert.strictEqual(summary.in_cleaning, 1);
-assert.strictEqual(summary.ready, 1);
+assert.strictEqual(summary['received'], 1);
+assert.strictEqual(summary['in_cleaning'], 1);
+assert.strictEqual(summary['ready'], 1);
 
 // Test getGarmentStatusSummary - counts add up to total garments
-const totalFromSummary = Object.values(summary).reduce((a, b) => a + b, 0);
+const totalFromSummary = Object.values(summary).reduce((a: number, b: number) => a + b, 0);
 const totalFromOrders = allOrders.reduce((acc, o) => acc + o.garments.length, 0);
 assert.strictEqual(totalFromSummary, totalFromOrders, 'summary counts should match total garments');
 
-// Test getGarmentStatusSummary - edge case when no orders exist
+// Test getGarmentStatusSummary - edge case: no orders → empty object
 const originalOrders = [...allOrders];
 service.setOrdersForTesting([]);
 const emptySummary = service.getGarmentStatusSummary();
 assert.deepStrictEqual(emptySummary, {}, 'summary should be empty if there are no orders');
 
-// Test getGarmentStatusSummary - edgecase where there are orders but no garments
+// Test getGarmentStatusSummary - edge case: orders with empty garments → empty object
 service.setOrdersForTesting([
   {
     id: 'ORD-EMPTY',
