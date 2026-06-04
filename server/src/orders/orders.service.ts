@@ -54,18 +54,18 @@ export class OrdersService {
     return undefined;
   }
 
-  getGarmentStatusSummary(): Record<GarmentStatus, number> {
-    const summary: Record<GarmentStatus, number> = {
-      received: 0,
-      in_cleaning: 0,
-      ready: 0,
-      delivered: 0,
-    };
+  getGarmentStatusSummary(): { [status: string]: number } {
+    const summary: { [status: string]: number } = {};
     for (const order of ORDERS) {
       for (const garment of order.garments) {
-        summary[garment.status]++;
+        summary[garment.status] = (summary[garment.status] || 0) + 1;
       }
     }
     return summary;
+  }
+
+  setOrdersForTesting(orders: Order[]): void {
+    ORDERS.length = 0;
+    ORDERS.push(...orders);
   }
 }

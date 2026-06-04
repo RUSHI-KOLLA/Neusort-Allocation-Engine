@@ -11,7 +11,7 @@ export class OrdersController {
   }
 
   @Get('summary')
-  getSummary(): Record<GarmentStatus, number> {
+  getSummary(): { [status: string]: number } {
     return this.ordersService.getGarmentStatusSummary();
   }
 
