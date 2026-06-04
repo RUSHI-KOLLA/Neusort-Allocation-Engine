@@ -1,5 +1,5 @@
 import { Controller, Get, Param, NotFoundException } from '@nestjs/common';
-import { OrdersService, Order } from './orders.service';
+import { OrdersService, Order, GarmentStatus } from './orders.service';
 
 @Controller('orders')
 export class OrdersController {
@@ -11,7 +11,7 @@ export class OrdersController {
   }
 
   @Get('summary')
-  getSummary(): { [status: string]: number } {
+  getSummary(): Record<GarmentStatus, number> {
     return this.ordersService.getGarmentStatusSummary();
   }
 
