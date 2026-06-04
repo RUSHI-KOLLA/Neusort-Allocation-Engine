@@ -13,6 +13,7 @@ export interface Order {
   customerName: string;
   createdAt: string; // ISO string
   garments: Garment[];
+  totalGarments?: number;
 }
 
 // In-memory mock data to simulate a POS-like workflow
@@ -39,11 +40,18 @@ const ORDERS: Order[] = [
 @Injectable()
 export class OrdersService {
   findAll(): Order[] {
-    return ORDERS;
+    return ORDERS.map(order => ({
+      ...order,
+      totalGarments: order.garments.length
+    }));
   }
 
   findOne(id: string): Order | undefined {
-    return ORDERS.find((o) => o.id === id);
+    const order = ORDERS.find((o) => o.id === id);
+    if (order) {
+      return { ...order, totalGarments: order.garments.length };
+    }
+    return undefined;
   }
 
   getGarmentStatusSummary(): { [status: string]: number } {

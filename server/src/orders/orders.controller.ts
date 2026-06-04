@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, NotFoundException } from '@nestjs/common';
 import { OrdersService, Order } from './orders.service';
 
 @Controller('orders')
@@ -16,10 +16,10 @@ export class OrdersController {
   }
 
   @Get(':id')
-  getOrder(@Param('id') id: string): Order | { error: string } {
+  getOrder(@Param('id') id: string): Order {
     const order = this.ordersService.findOne(id);
     if (!order) {
-      return { error: `Order with id ${id} not found` };
+      throw new NotFoundException(`Order with id ${id} not found`);
     }
     return order;
   }

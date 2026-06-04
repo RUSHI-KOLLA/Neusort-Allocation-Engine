@@ -44,7 +44,10 @@ export const OrdersList: React.FC<Props> = ({ orders, selectedStatus }) => {
             <strong>{order.id}</strong>
             <span>{order.customerName}</span>
           </div>
-          <small>Created: {new Date(order.createdAt).toLocaleString()}</small>
+          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#666', fontSize: '0.9rem', margin: '4px 0' }}>
+            <small>Created: {new Date(order.createdAt).toLocaleString()}</small>
+            <small>Total Garments: {order.totalGarments ?? order.garments.length}</small>
+          </div>
           <ul>
             {order.garments.map((g) => (
               <li key={g.id}>
