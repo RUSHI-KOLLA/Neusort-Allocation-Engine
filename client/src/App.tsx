@@ -51,10 +51,10 @@ export const App: React.FC = () => {
         
         setOrders(ordersData);
         setSummary(summaryData);
+        setLoading(false);
       } catch (e: unknown) {
         if (e instanceof DOMException && e.name === 'AbortError') return;
         setError(e instanceof Error ? e.message : 'Failed to load data');
-      } finally {
         setLoading(false);
       }
     };

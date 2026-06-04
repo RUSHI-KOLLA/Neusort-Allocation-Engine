@@ -14,7 +14,7 @@ This mini app exposes a simple API to list orders and a React UI to display them
 - A NestJS application under `server/`.
 - `OrdersService` with in-memory mock data representing a couple of orders and garments.
 - `GET /api/orders` to list all orders.
-- `GET /api/orders/:id` to fetch a single order by ID (returns a simple `{ error: string }` object if not found).
+- `GET /api/orders/:id` to fetch a single order by ID (throws a 404 NotFoundException if not found).
 
 ### Frontend (React + TypeScript)
 - A minimal React app under `client/`.
@@ -42,7 +42,7 @@ From the repository root:
 
 ```bash
 npm run install-all
-``
+```
 
 This uses npm workspaces to install dependencies for both `server` and `client`.
 

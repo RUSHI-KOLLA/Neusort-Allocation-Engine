@@ -23,12 +23,16 @@ export const OrdersList: React.FC<Props> = ({ orders, selectedStatus }) => {
     return <div className="empty-state">No active orders.</div>;
   }
 
-  const filteredOrders = orders.map(order => ({
-    ...order,
-    garments: selectedStatus === 'all'
-      ? order.garments
-      : order.garments.filter(g => g.status === selectedStatus)
-  })).filter(order => order.garments.length > 0);
+  const filteredOrders = orders.map(order => {
+    const total = order.totalGarments ?? order.garments.length;
+    return {
+      ...order,
+      totalGarments: total,
+      garments: selectedStatus === 'all'
+        ? order.garments
+        : order.garments.filter(g => g.status === selectedStatus)
+    };
+  }).filter(order => order.garments.length > 0);
 
   if (filteredOrders.length === 0) {
     return <div className="empty-state">No garments match the selected status.</div>;
@@ -46,7 +50,7 @@ export const OrdersList: React.FC<Props> = ({ orders, selectedStatus }) => {
             <span>Created: {formatDate(order.createdAt)}</span>
             <span>
               {selectedStatus === 'all'
-                ? `${order.totalGarments ?? order.garments.length} garments`
+                ? `${order.totalGarments} garments`
                 : `${order.garments.length} of ${order.totalGarments} garments`}
             </span>
           </div>
