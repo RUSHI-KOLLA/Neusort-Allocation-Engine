@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { OrdersList } from './OrdersList';
 
+const API_BASE = process.env.REACT_APP_API_URL ?? 'http://localhost:3001/api';
+
 export interface Garment {
   id: string;
   description: string;
@@ -31,13 +33,15 @@ export const App: React.FC = () => {
   const [summary, setSummary] = useState<Record<string, number> | null>(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchOrdersAndSummary = async () => {
       setLoading(true);
       setError(null);
       try {
         const [ordersRes, summaryRes] = await Promise.all([
-          fetch('http://localhost:3001/api/orders'),
-          fetch('http://localhost:3001/api/orders/summary')
+          fetch(`${API_BASE}/orders`, { signal: controller.signal }),
+          fetch(`${API_BASE}/orders/summary`, { signal: controller.signal })
         ]);
         if (!ordersRes.ok) throw new Error(`HTTP ${ordersRes.status} on orders`);
         if (!summaryRes.ok) throw new Error(`HTTP ${summaryRes.status} on summary`);
@@ -47,14 +51,16 @@ export const App: React.FC = () => {
         
         setOrders(ordersData);
         setSummary(summaryData);
-      } catch (e: any) {
-        setError(e.message || 'Failed to load data');
+      } catch (e: unknown) {
+        if (e instanceof DOMException && e.name === 'AbortError') return;
+        setError(e instanceof Error ? e.message : 'Failed to load data');
       } finally {
         setLoading(false);
       }
     };
 
     fetchOrdersAndSummary();
+    return () => controller.abort();
   }, []);
 
   return (
@@ -95,7 +101,7 @@ export const App: React.FC = () => {
             <select
               id="statusFilter"
               value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value as any)}
+              onChange={(e) => setSelectedStatus(e.target.value as typeof selectedStatus)}
             >
               {STATUS_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>

@@ -13,6 +13,11 @@ const statusLabel: Record<string, string> = {
   delivered: 'Delivered',
 };
 
+function formatDate(dateStr: string): string {
+  const d = new Date(dateStr);
+  return isNaN(d.getTime()) ? 'Unknown date' : d.toLocaleString();
+}
+
 export const OrdersList: React.FC<Props> = ({ orders, selectedStatus }) => {
   if (orders.length === 0) {
     return <div className="empty-state">No active orders.</div>;
@@ -38,8 +43,12 @@ export const OrdersList: React.FC<Props> = ({ orders, selectedStatus }) => {
             <span className="order-customer">{order.customerName}</span>
           </div>
           <div className="order-meta">
-            <span>Created: {new Date(order.createdAt).toLocaleString()}</span>
-            <span>{order.totalGarments ?? order.garments.length} garments</span>
+            <span>Created: {formatDate(order.createdAt)}</span>
+            <span>
+              {selectedStatus === 'all'
+                ? `${order.totalGarments ?? order.garments.length} garments`
+                : `${order.garments.length} of ${order.totalGarments} garments`}
+            </span>
           </div>
           <ul className="garments-list">
             {order.garments.map((g) => (
