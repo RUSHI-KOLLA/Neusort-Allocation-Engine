@@ -15,9 +15,17 @@ export interface Order {
   totalGarments?: number;
 }
 
+const STATUS_OPTIONS = [
+  { value: 'all', label: 'All Statuses' },
+  { value: 'received', label: 'Received' },
+  { value: 'in_cleaning', label: 'In Cleaning' },
+  { value: 'ready', label: 'Ready for Pickup' },
+  { value: 'delivered', label: 'Delivered' },
+] as const;
+
 export const App: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<'all' | 'received' | 'in_cleaning' | 'ready' | 'delivered'>('all');
   const [summary, setSummary] = useState<Record<string, number> | null>(null);
@@ -50,49 +58,54 @@ export const App: React.FC = () => {
   }, []);
 
   return (
-    <div style={{ padding: '1rem', fontFamily: 'sans-serif' }}>
-      <h1>QDC Mini Dashboard</h1>
-      <p>Simple view of active orders and garments.</p>
+    <div className="dashboard">
+      <header className="dashboard-header">
+        <h1>QDC Dashboard</h1>
+        <p>Real-time overview of orders and garment statuses</p>
+      </header>
+
       {loading && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
-          <div style={{ width: '16px', height: '16px', border: '2px solid #ccc', borderTopColor: '#333', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-          <span>Loading...</span>
-          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-        </div>
-      )}
-      
-      {error && (
-        <div style={{ padding: '1rem', backgroundColor: '#fee2e2', color: '#991b1b', borderRadius: '4px', marginBottom: '1rem' }}>
-          <strong>Error:</strong> {error}
-        </div>
-      )}
-      
-      {!loading && !error && summary && (
-        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
-          {Object.entries(summary).map(([status, count]) => (
-            <div key={status} style={{ padding: '0.75rem 1rem', background: '#e0e7ff', borderRadius: '8px', border: '1px solid #c7d2fe', minWidth: '100px' }}>
-              <div style={{ fontSize: '0.8rem', color: '#4f46e5', textTransform: 'capitalize' }}>{status.replace('_', ' ')}</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#312e81' }}>{count}</div>
-            </div>
-          ))}
+        <div className="loading-container">
+          <div className="spinner" />
+          <span>Loading dashboard…</span>
         </div>
       )}
 
-      <div style={{ marginBottom: '1rem' }}>
-        <label htmlFor="statusFilter">Filter by Status: </label>
-        <select
-          id="statusFilter"
-          value={selectedStatus}
-          onChange={(e) => setSelectedStatus(e.target.value as any)}
-        >
-          <option value="all">All</option>
-          <option value="received">Received</option>
-          <option value="in_cleaning">In Cleaning</option>
-          <option value="ready">Ready for Pickup</option>
-          <option value="delivered">Delivered</option>
-        </select>
-      </div>
-      {!loading && !error && <OrdersList orders={orders} selectedStatus={selectedStatus} />}
+      {error && (
+        <div className="error-banner">
+          <strong>Something went wrong — </strong>{error}
+        </div>
+      )}
+
+      {!loading && !error && (
+        <>
+          {summary && (
+            <div className="summary-grid">
+              {Object.entries(summary).map(([status, count]) => (
+                <div key={status} className={`summary-card ${status}`}>
+                  <div className="label">{status.replace('_', ' ')}</div>
+                  <div className="count">{count}</div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="filter-bar">
+            <label htmlFor="statusFilter">Filter:</label>
+            <select
+              id="statusFilter"
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value as any)}
+            >
+              {STATUS_OPTIONS.map(opt => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <OrdersList orders={orders} selectedStatus={selectedStatus} />
+        </>
+      )}
     </div>
   );
 };

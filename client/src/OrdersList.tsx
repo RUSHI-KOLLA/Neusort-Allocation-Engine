@@ -15,7 +15,7 @@ const statusLabel: Record<string, string> = {
 
 export const OrdersList: React.FC<Props> = ({ orders, selectedStatus }) => {
   if (orders.length === 0) {
-    return <p>No active orders.</p>;
+    return <div className="empty-state">No active orders.</div>;
   }
 
   const filteredOrders = orders.map(order => ({
@@ -26,32 +26,28 @@ export const OrdersList: React.FC<Props> = ({ orders, selectedStatus }) => {
   })).filter(order => order.garments.length > 0);
 
   if (filteredOrders.length === 0) {
-    return <p>No garments match the selected status.</p>;
+    return <div className="empty-state">No garments match the selected status.</div>;
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+    <div className="orders-list">
       {filteredOrders.map((order) => (
-        <div
-          key={order.id}
-          style={{
-            border: '1px solid #ccc',
-            borderRadius: 4,
-            padding: '0.75rem',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <strong>{order.id}</strong>
-            <span>{order.customerName}</span>
+        <div key={order.id} className="order-card">
+          <div className="order-header">
+            <span className="order-id">{order.id}</span>
+            <span className="order-customer">{order.customerName}</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#666', fontSize: '0.9rem', margin: '4px 0' }}>
-            <small>Created: {new Date(order.createdAt).toLocaleString()}</small>
-            <small>Total Garments: {order.totalGarments ?? order.garments.length}</small>
+          <div className="order-meta">
+            <span>Created: {new Date(order.createdAt).toLocaleString()}</span>
+            <span>{order.totalGarments ?? order.garments.length} garments</span>
           </div>
-          <ul>
+          <ul className="garments-list">
             {order.garments.map((g) => (
-              <li key={g.id}>
-                {g.description} - <em>{statusLabel[g.status] ?? g.status}</em>
+              <li key={g.id} className="garment-item">
+                <span className="garment-name">{g.description}</span>
+                <span className={`status-badge ${g.status}`}>
+                  {statusLabel[g.status] ?? g.status}
+                </span>
               </li>
             ))}
           </ul>
